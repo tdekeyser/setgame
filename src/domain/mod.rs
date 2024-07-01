@@ -1,8 +1,6 @@
 use std::collections::HashSet;
 use std::hash::Hash;
 
-use crate::{Error, Result};
-
 #[derive(PartialEq, Eq, Hash)]
 enum Color {
     Red,
@@ -31,19 +29,25 @@ enum Shading {
     Open,
 }
 
-struct Card(Number, Shading, Color, Shape);
+#[derive(PartialEq, Debug)]
+pub enum SetStatus {
+    IsASet,
+    NotASet(String),
+}
 
-struct Triple(Card, Card, Card);
+pub struct Card(Number, Shading, Color, Shape);
+
+pub struct Triple(Card, Card, Card);
 
 impl Triple {
-    fn is_set(&self) -> Result<bool> {
+    fn is_a_set(&self) -> SetStatus {
         let number_check = Number::all_same_or_all_different(&[&self.0.0, &self.1.0, &self.2.0]);
         let shading_check = Shading::all_same_or_all_different(&[&self.0.1, &self.1.1, &self.2.1]);
         let color_check = Color::all_same_or_all_different(&[&self.0.2, &self.1.2, &self.2.2]);
         let shape_check = Shape::all_same_or_all_different(&[&self.0.3, &self.1.3, &self.2.3]);
 
         if number_check && shading_check && color_check && shape_check {
-            Ok(true)
+            SetStatus::IsASet
         } else {
             let mut reasons = vec![];
 
@@ -60,12 +64,15 @@ impl Triple {
                 reasons.push("Shapes are not all the same or different.");
             }
 
-            Err(Error::NotASet(reasons.join(" ")))
+            SetStatus::NotASet(reasons.join(" "))
         }
     }
 }
 
-trait AllSameOrAllDifferent<F> where F: Eq + Hash + AllSameOrAllDifferent<F> {
+trait AllSameOrAllDifferent<F>
+where
+    F: Eq + Hash + AllSameOrAllDifferent<F>,
+{
     fn all_same_or_all_different(features: &[&F]) -> bool {
         F::all_same(features) || F::all_different(features)
     }
@@ -101,33 +108,37 @@ mod tests {
     use crate::domain::Shape::*;
 
     #[test]
-    fn is_set_all_similar_or_all_different() -> Result<()> {
-        Triple(
-            Card(Three, Solid, Red, Diamond),
-            Card(Two, Solid, Green, Squiggle),
-            Card(One, Solid, Purple, Oval),
-        ).is_set()?;
-
-        Ok(())
+    fn is_set_all_similar_or_all_different() {
+        assert_eq!(
+            Triple(
+                Card(Three, Solid, Red, Diamond),
+                Card(Two, Solid, Green, Squiggle),
+                Card(One, Solid, Purple, Oval),
+            ).is_a_set(),
+            SetStatus::IsASet
+        )
     }
 
     #[test]
-    #[should_panic(expected = "Numbers are not all the same or different.")]
     fn not_a_set_not_all_different() {
-        Triple(
-            Card(Three, Solid, Red, Diamond),
-            Card(Three, Solid, Green, Squiggle),
-            Card(One, Solid, Purple, Oval),
-        ).is_set().unwrap();
+        assert_eq!(
+            Triple(
+                Card(Three, Solid, Red, Diamond),
+                Card(Three, Solid, Green, Squiggle),
+                Card(One, Solid, Purple, Oval),
+            ).is_a_set(),
+            SetStatus::NotASet("Numbers are not all the same or different.".into()))
     }
 
     #[test]
-    #[should_panic(expected = "Shadings are not all the same or different.")]
     fn not_a_set_not_all_same() {
-        Triple(
-            Card(Three, Solid, Red, Diamond),
-            Card(Two, Solid, Green, Squiggle),
-            Card(One, Open, Purple, Oval),
-        ).is_set().unwrap();
+        assert_eq!(
+            Triple(
+                Card(Three, Solid, Red, Diamond),
+                Card(Two, Solid, Green, Squiggle),
+                Card(One, Open, Purple, Oval),
+            ).is_a_set(),
+            SetStatus::NotASet("Shadings are not all the same or different.".into())
+        )
     }
 }
