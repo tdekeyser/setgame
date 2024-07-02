@@ -1,32 +1,15 @@
-use std::collections::HashSet;
-use std::hash::Hash;
+use rand::Rng;
+use serde::Serialize;
 
-#[derive(PartialEq, Eq, Hash)]
-enum Color {
-    Red,
-    Green,
-    Purple,
-}
+use crate::card_game::features::{AllSameOrAllDifferent, Color, Number, Shading, Shape};
 
-#[derive(PartialEq, Eq, Hash)]
-enum Number {
-    One,
-    Two,
-    Three,
-}
+#[derive(Clone, Serialize)]
+pub struct Card(pub Number, pub Shading, pub Color, pub Shape);
 
-#[derive(PartialEq, Eq, Hash)]
-enum Shape {
-    Squiggle,
-    Diamond,
-    Oval,
-}
-
-#[derive(PartialEq, Eq, Hash)]
-enum Shading {
-    Solid,
-    Striped,
-    Open,
+impl Card {
+    pub fn random<R: Rng + ?Sized>(rng: &mut R) -> Self {
+        Card(rng.gen(), rng.gen(), rng.gen(), rng.gen())
+    }
 }
 
 #[derive(PartialEq, Debug)]
@@ -35,12 +18,14 @@ pub enum SetStatus {
     NotASet(String),
 }
 
-pub struct Card(Number, Shading, Color, Shape);
-
 pub struct Triple(Card, Card, Card);
 
 impl Triple {
-    fn is_a_set(&self) -> SetStatus {
+    pub fn new(one: Card, two: Card, three: Card) -> Self {
+        Self(one, two, three)
+    }
+
+    pub fn is_a_set(&self) -> SetStatus {
         let number_check = Number::all_same_or_all_different(&[&self.0.0, &self.1.0, &self.2.0]);
         let shading_check = Shading::all_same_or_all_different(&[&self.0.1, &self.1.1, &self.2.1]);
         let color_check = Color::all_same_or_all_different(&[&self.0.2, &self.1.2, &self.2.2]);
@@ -69,43 +54,14 @@ impl Triple {
     }
 }
 
-trait AllSameOrAllDifferent<F>
-where
-    F: Eq + Hash + AllSameOrAllDifferent<F>,
-{
-    fn all_same_or_all_different(features: &[&F]) -> bool {
-        F::all_same(features) || F::all_different(features)
-    }
-
-    fn all_same(features: &[&F]) -> bool {
-        if let Some(first) = features.first() {
-            features.iter().all(|item| item == first)
-        } else {
-            true
-        }
-    }
-
-    fn all_different(features: &[&F]) -> bool {
-        features.len() == features.iter().collect::<HashSet<_>>().len()
-    }
-}
-
-impl AllSameOrAllDifferent<Color> for Color {}
-
-impl AllSameOrAllDifferent<Number> for Number {}
-
-impl AllSameOrAllDifferent<Shape> for Shape {}
-
-impl AllSameOrAllDifferent<Shading> for Shading {}
-
 
 #[cfg(test)]
 mod tests {
-    use crate::domain::*;
-    use crate::domain::Color::*;
-    use crate::domain::Number::*;
-    use crate::domain::Shading::*;
-    use crate::domain::Shape::*;
+    use crate::card_game::card::{Card, SetStatus, Triple};
+    use crate::card_game::features::Color::*;
+    use crate::card_game::features::Number::*;
+    use crate::card_game::features::Shading::*;
+    use crate::card_game::features::Shape::*;
 
     #[test]
     fn is_set_all_similar_or_all_different() {
