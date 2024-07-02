@@ -4,30 +4,30 @@ use std::hash::Hash;
 use rand::prelude::Distribution;
 use rand::distributions::Standard;
 use rand::Rng;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(PartialEq, Eq, Hash, Clone, Serialize)]
+#[derive(PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub enum Color {
     Red,
     Green,
     Purple,
 }
 
-#[derive(PartialEq, Eq, Hash, Clone, Serialize)]
+#[derive(PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub enum Number {
     One,
     Two,
     Three,
 }
 
-#[derive(PartialEq, Eq, Hash, Clone, Serialize)]
+#[derive(PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub enum Shape {
     Squiggle,
     Diamond,
     Oval,
 }
 
-#[derive(PartialEq, Eq, Hash, Clone, Serialize)]
+#[derive(PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub enum Shading {
     Solid,
     Striped,

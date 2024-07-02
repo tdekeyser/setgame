@@ -1,9 +1,9 @@
 use rand::Rng;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::card_game::features::{AllSameOrAllDifferent, Color, Number, Shading, Shape};
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Card(pub Number, pub Shading, pub Color, pub Shape);
 
 impl Card {
@@ -12,12 +12,13 @@ impl Card {
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Serialize)]
 pub enum SetStatus {
     IsASet,
     NotASet(String),
 }
 
+#[derive(Deserialize)]
 pub struct Triple(Card, Card, Card);
 
 impl Triple {

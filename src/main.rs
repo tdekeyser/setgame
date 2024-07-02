@@ -1,9 +1,11 @@
 extern crate core;
 
-use axum::Router;
-use axum::routing::get;
+use axum::{Json, Router};
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
+use axum::routing::{get, post};
 
-use crate::card_game::CardGame;
+use crate::card_game::{CardGame, Triple};
 
 mod error;
 mod card_game;
@@ -11,7 +13,8 @@ mod card_game;
 #[tokio::main]
 async fn main() {
     let app = Router::new()
-        .route("/game", get(game_handler));
+        .route("/game", get(game_handler))
+        .route("/set", post(set_handler));
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
@@ -24,9 +27,13 @@ async fn main() {
         .unwrap();
 }
 
-async fn game_handler() -> axum::Json<CardGame> {
+async fn game_handler() -> impl IntoResponse {
     let game = CardGame::generate_fixed(12, 6);
-    axum::Json(game)
+    (StatusCode::OK, Json(game))
+}
+
+async fn set_handler(triple: Json<Triple>) -> impl IntoResponse {
+    (StatusCode::OK, Json(triple.is_a_set()))
 }
 
 #[cfg(test)]
