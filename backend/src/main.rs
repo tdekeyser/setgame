@@ -13,8 +13,8 @@ mod card_game;
 #[tokio::main]
 async fn main() {
     let app = Router::new()
-        .route("/game", get(game_handler))
-        .route("/set", post(set_handler));
+        .route("/api/game", get(game_handler))
+        .route("/api/set", post(set_handler));
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
