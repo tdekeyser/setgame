@@ -1,5 +1,5 @@
 [package]
-name = "setgame"
+name = "setgame_server"
 version = "0.1.0"
 edition = "2021"
 
