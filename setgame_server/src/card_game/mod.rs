@@ -1,6 +1,6 @@
-pub use card::Triple;
+pub use triple::Triple;
 pub use game::CardGame;
 
-mod features;
 mod card;
+mod triple;
 mod game;

@@ -29,8 +29,8 @@ function getAmount(card) {
 <style scoped>
 .card {
   display: flex;
-  background-color: #fabedc; /* Hot pink background */
-  border: 3px dashed #00ffff; /* Cyan dashed border */
+  background-color: #f8e2ed; /* Hot pink background */
+  border: 3px dashed #23ec2f; /* Cyan dashed border */
   border-radius: 10px;
   padding: 10px;
   margin: 10px;
@@ -41,5 +41,6 @@ function getAmount(card) {
 .card-img {
   margin-left: auto;
   margin-right: auto;
+  padding: 0 0 0 3px;
 }
 </style>
