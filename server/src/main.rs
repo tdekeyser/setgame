@@ -17,7 +17,7 @@ async fn main() {
         .route("/api/game", get(game_handler))
         .route("/api/set", post(set_handler))
         .fallback(
-            get_service(ServeDir::new("../webapp/dist")).handle_error(|_| async move {
+            get_service(ServeDir::new("./webapp/dist")).handle_error(|_| async move {
                 (StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
             }),
         );
