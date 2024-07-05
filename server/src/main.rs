@@ -3,7 +3,8 @@ extern crate core;
 use axum::{Json, Router};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::routing::{get, post};
+use axum::routing::{get, get_service, post};
+use tower_http::services::ServeDir;
 
 use crate::card_game::{CardGame, Triple};
 
@@ -14,7 +15,12 @@ mod card_game;
 async fn main() {
     let app = Router::new()
         .route("/api/game", get(game_handler))
-        .route("/api/set", post(set_handler));
+        .route("/api/set", post(set_handler))
+        .fallback(
+            get_service(ServeDir::new("../webapp/dist")).handle_error(|_| async move {
+                (StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+            }),
+        );
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await

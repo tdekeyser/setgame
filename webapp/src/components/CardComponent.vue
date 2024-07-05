@@ -25,22 +25,3 @@ function getAmount(card) {
     <img class="card-img" v-for="_ in getAmount(card)" :src="getImageSrc(card)" :alt="card" />
   </div>
 </template>
-
-<style scoped>
-.card {
-  display: flex;
-  background-color: #f8e2ed; /* Hot pink background */
-  border: 3px dashed #23ec2f; /* Cyan dashed border */
-  border-radius: 10px;
-  padding: 10px;
-  margin: 10px;
-  text-align: center;
-  box-shadow: 5px 5px #ff00ff; /* Magenta shadow */
-}
-
-.card-img {
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 0 0 3px;
-}
-</style>
