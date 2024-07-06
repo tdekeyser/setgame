@@ -2,9 +2,9 @@ use itertools::Itertools;
 use rand::prelude::SliceRandom;
 use rand::Rng;
 use serde::Serialize;
-use crate::card_game::card::Card;
 
-use crate::card_game::triple::{SetStatus, Triple};
+use crate::card::Card;
+use crate::triple::{SetStatus, Triple};
 
 #[derive(Serialize)]
 pub struct CardGame(Vec<Card>);
@@ -48,12 +48,12 @@ impl CardGame {
 
 #[cfg(test)]
 mod tests {
-    use crate::card_game::card::Card;
-    use crate::card_game::card::Color::{Green, Purple, Red};
-    use crate::card_game::card::Number::{One, Three, Two};
-    use crate::card_game::card::Shading::Solid;
-    use crate::card_game::card::Shape::{Diamond, Oval, Squiggle};
-    use crate::card_game::game::CardGame;
+    use crate::card::Card;
+    use crate::card::Color::{Green, Purple, Red};
+    use crate::card::Number::{One, Three, Two};
+    use crate::card::Shading::Solid;
+    use crate::card::Shape::{Diamond, Oval, Squiggle};
+    use crate::game::CardGame;
 
     #[test]
     fn generate_a_game() {
@@ -64,11 +64,11 @@ mod tests {
     #[test]
     fn count_sets_in_a_game() {
         let game = CardGame(vec![
-            Card(Three, Solid, Red, Diamond),
-            Card(Two, Solid, Green, Squiggle),
-            Card(One, Solid, Purple, Oval),
-            Card(One, Solid, Purple, Diamond),
-            Card(One, Solid, Purple, Squiggle),
+            Card::new(Three, Solid, Red, Diamond),
+            Card::new(Two, Solid, Green, Squiggle),
+            Card::new(One, Solid, Purple, Oval),
+            Card::new(One, Solid, Purple, Diamond),
+            Card::new(One, Solid, Purple, Squiggle),
         ]);
 
         assert_eq!(game.count_sets(), 2);

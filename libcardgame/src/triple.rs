@@ -3,7 +3,7 @@ use std::hash::Hash;
 
 use serde::{Deserialize, Serialize};
 
-use crate::card_game::card::{Card, Color, Number, Shading, Shape};
+use crate::card::{Card, Color, Number, Shading, Shape};
 
 #[derive(PartialEq, Debug, Serialize)]
 pub enum SetStatus {
@@ -20,10 +20,18 @@ impl Triple {
     }
 
     pub fn is_a_set(&self) -> SetStatus {
-        let number_check = Number::all_same_or_all_different(&[&self.0.0, &self.1.0, &self.2.0]);
-        let shading_check = Shading::all_same_or_all_different(&[&self.0.1, &self.1.1, &self.2.1]);
-        let color_check = Color::all_same_or_all_different(&[&self.0.2, &self.1.2, &self.2.2]);
-        let shape_check = Shape::all_same_or_all_different(&[&self.0.3, &self.1.3, &self.2.3]);
+        let number_check = Number::all_same_or_all_different(
+            &[self.0.number(), self.1.number(), self.2.number()]
+        );
+        let shading_check = Shading::all_same_or_all_different(
+            &[self.0.shading(), &self.1.shading(), self.2.shading()]
+        );
+        let color_check = Color::all_same_or_all_different(
+            &[self.0.color(), self.1.color(), self.2.color()]
+        );
+        let shape_check = Shape::all_same_or_all_different(
+            &[self.0.shape(), self.1.shape(), self.2.shape()]
+        );
 
         if number_check && shading_check && color_check && shape_check {
             SetStatus::IsASet
@@ -80,20 +88,20 @@ impl AllSameOrAllDifferent<Shading> for Shading {}
 
 #[cfg(test)]
 mod tests {
-    use crate::card_game::card::{Color, Number};
-    use crate::card_game::card::Color::*;
-    use crate::card_game::card::Number::*;
-    use crate::card_game::card::Shading::*;
-    use crate::card_game::card::Shape::*;
-    use crate::card_game::triple::{AllSameOrAllDifferent, Card, SetStatus, Triple};
+    use crate::card::{Card, Color, Number};
+    use crate::card::Color::*;
+    use crate::card::Number::*;
+    use crate::card::Shading::*;
+    use crate::card::Shape::*;
+    use crate::triple::{AllSameOrAllDifferent, SetStatus, Triple};
 
     #[test]
     fn is_set_all_similar_or_all_different() {
         assert_eq!(
             Triple(
-                Card(Three, Solid, Red, Diamond),
-                Card(Two, Solid, Green, Squiggle),
-                Card(One, Solid, Purple, Oval),
+                Card::new(Three, Solid, Red, Diamond),
+                Card::new(Two, Solid, Green, Squiggle),
+                Card::new(One, Solid, Purple, Oval),
             ).is_a_set(),
             SetStatus::IsASet
         )
@@ -103,9 +111,9 @@ mod tests {
     fn not_a_set_not_all_different() {
         assert_eq!(
             Triple(
-                Card(Three, Solid, Red, Diamond),
-                Card(Three, Solid, Green, Squiggle),
-                Card(One, Solid, Purple, Oval),
+                Card::new(Three, Solid, Red, Diamond),
+                Card::new(Three, Solid, Green, Squiggle),
+                Card::new(One, Solid, Purple, Oval),
             ).is_a_set(),
             SetStatus::NotASet("Numbers are not all the same or different.".into()))
     }
@@ -114,9 +122,9 @@ mod tests {
     fn not_a_set_not_all_same() {
         assert_eq!(
             Triple(
-                Card(Three, Solid, Red, Diamond),
-                Card(Two, Solid, Green, Squiggle),
-                Card(One, Open, Purple, Oval),
+                Card::new(Three, Solid, Red, Diamond),
+                Card::new(Two, Solid, Green, Squiggle),
+                Card::new(One, Open, Purple, Oval),
             ).is_a_set(),
             SetStatus::NotASet("Shadings are not all the same or different.".into())
         )

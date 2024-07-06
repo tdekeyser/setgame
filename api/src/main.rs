@@ -5,11 +5,10 @@ use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, get_service, post};
 use tower_http::services::ServeDir;
+use libcardgame::{CardGame, Triple};
 
-use crate::card_game::{CardGame, Triple};
 
 mod error;
-mod card_game;
 
 #[tokio::main]
 async fn main() {
@@ -18,7 +17,7 @@ async fn main() {
         .route("/api/set", post(set_handler))
         .fallback(
             get_service(ServeDir::new("./webapp/dist")).handle_error(|_| async move {
-                (StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+                (StatusCode::INTERNAL_SERVER_ERROR, "internal api error")
             }),
         );
 
