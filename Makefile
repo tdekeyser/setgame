@@ -1,7 +1,7 @@
 build: build-webapp build-server
 
 run: build
-	./target/release/server
+	./target/release/api
 
 build-webapp:
 	cd webapp && pnpm run build

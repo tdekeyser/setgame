@@ -4,14 +4,20 @@ use axum::{Json, Router};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, get_service, post};
+use tokio::net::TcpListener;
 use tower_http::services::ServeDir;
+
 use libcardgame::{CardGame, Triple};
 
+use crate::config::Config;
 
 mod error;
+mod config;
 
 #[tokio::main]
 async fn main() {
+    let config = Config::new();
+
     let app = Router::new()
         .route("/api/game", get(game_handler))
         .route("/api/set", post(set_handler))
@@ -21,7 +27,7 @@ async fn main() {
             }),
         );
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
+    let listener = TcpListener::bind(config.hostname())
         .await
         .unwrap();
 
